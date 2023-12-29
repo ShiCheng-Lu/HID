@@ -42,4 +42,4 @@ COLLECTION (Application)
 END_COLLECTION
 };
 
-size_t keyboard_report_descriptor_len = sizeof(keyboard_report_descriptor);
+uint8_t keyboard_report_descriptor_len = sizeof(keyboard_report_descriptor);

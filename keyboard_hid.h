@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 extern uint8_t keyboard_report_descriptor[];
-extern size_t keyboard_report_descriptor_len;
+extern uint8_t keyboard_report_descriptor_len;
 
 typedef struct KeyboardReport {
   bool left_control : 1;

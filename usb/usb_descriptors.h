@@ -26,7 +26,7 @@ typedef struct DeviceDescriptor {
   uint8_t bDeviceClass;
   uint8_t bDeviceSubClass;
   uint8_t bDeviceProtocol;
-  uint8_t bMaxPacketSize;
+  uint8_t bMaxPacketSize0;
   uint16_t idVendor;
   uint16_t idProduct;
   uint16_t bcdDevice;
@@ -68,14 +68,18 @@ typedef struct EndpointDescriptor {
   uint8_t bInterval;
 } EndpointDescriptor;
 
+#define MAX_REPORTS 10
+
 typedef struct HIDDescriptor {
   uint8_t bLength;
   uint8_t bDescriptorType;
   uint16_t bcdHID;  // bcd each byte is 0-9
   uint8_t bCountryCode;
   uint8_t bNumDescriptors;
-  uint8_t bDescriptorType0;  // first descriptor to follow
-  uint16_t wDescriptorLength0;
+  struct {
+    uint8_t bDescriptorType;
+    uint16_t wDescriptorLength;
+  } reports[MAX_REPORTS];
 } HIDDescriptor;
 
 typedef uint8_t* StringDescriptor;
