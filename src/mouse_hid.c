@@ -33,4 +33,4 @@ END_COLLECTION
 
 };
 
-size_t mouse_report_descriptor_len = sizeof(mouse_report_descriptor);
+uint8_t mouse_report_descriptor_len = sizeof(mouse_report_descriptor);

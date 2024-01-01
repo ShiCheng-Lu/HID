@@ -1,9 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-extern uint8_t keyboard_report_descriptor[];
-extern uint8_t keyboard_report_descriptor_len;
-
 typedef struct KeyboardReport {
   bool left_control : 1;
   bool left_shift : 1;

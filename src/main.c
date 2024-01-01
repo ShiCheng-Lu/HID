@@ -56,21 +56,16 @@ HIDDescriptor mouse_hid_descriptor = {
 };
 
 void setup(void) {
-  keyboard_hid_descriptor.reports[0].wDescriptorLength =
-      keyboard_report_descriptor_len;
-  mouse_hid_descriptor.reports[0].wDescriptorLength =
-      mouse_report_descriptor_len;
+//   keyboard_hid_descriptor.reports[0].wDescriptorLength =
+//       keyboard_report_descriptor_len;
+//   mouse_hid_descriptor.reports[0].wDescriptorLength =
+//       mouse_report_descriptor_len;
 
   send_descriptor(&device_descriptor, DEVICE_DESCRIPTOR);
   send_descriptor(&config_descriptor, CONFIGURATION_DESCRIPTOR);
   send_descriptor(&keyboard_interface_descriptor, INTERFACE_DESCRIPTOR);
   send_descriptor(&keyboard_endpoint_descriptor, ENDPOINT_DESCRIPTOR);
   send_descriptor(&keyboard_hid_descriptor, HID_DESCRIPTOR);
-  // send_descriptor(&mouse_interface_descriptor, INTERFACE_DESCRIPTOR);
-  // send_descriptor(&mouse_endpoint_descriptor, ENDPOINT_DESCRIPTOR);
-
-  // send(hid_descriptor);
-  // send(mouse_report_descriptor, mouse_report_descriptor_len);
 }
 
 MouseReport mouse_report = {
