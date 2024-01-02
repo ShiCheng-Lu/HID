@@ -85,8 +85,10 @@ void interrupt(void) {
 void main(void) {
   setup();
 
+  
+
   // send((uint8_t*)&mouse_report, sizeof(mouse_report));
 
-  // while (1) {
-  // }
+  while (1) {
+  }
 }
