@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.19)
 set(CMAKE_C_COMPILER   avr-gcc)
 set(CMAKE_CXX_COMPILER avr-g++)
 
+set(MCU atmega16u2)
+
+add_compile_options(-Os)
+
 set(target main)
 
 project(
@@ -11,13 +15,19 @@ project(
     VERSION 1.0
     LANGUAGES C CXX ASM)
 
-include(lib/arduinoCore.cmake)
+# include(lib/arduinoCore.cmake)
+include(lib/lufa.cmake)
+# add_library(USB lib/usb/usb_descriptors.cpp lib/usb/usb_descriptors.h)
+# target_include_directories(USB PUBLIC lib)
 
-add_library(USB lib/usb/usb_descriptors.cpp lib/usb/usb_descriptors.h)
-target_include_directories(USB PUBLIC lib)
-
-add_executable(${target} src/main.cpp)
-target_link_libraries(${target} PRIVATE Arduino)
+add_executable(${target} 
+    # src/main.cpp
+    src/Arduino-usbserial.c
+    src/Descriptors-copy.c
+    )
+# target_link_libraries(${target} PRIVATE Arduino)
+target_link_libraries(${target} PRIVATE LUFA)
+target_include_directories(${target} PRIVATE inc)
 
 # generate .hex file
 # set_target_properties(${target} PROPERTIES SUFFIX ".elf")
