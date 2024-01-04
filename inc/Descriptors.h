@@ -40,27 +40,8 @@
 #include <avr/pgmspace.h>
 
 #include <LUFA/Drivers/USB/USB.h>
-// #include <LUFA/Drivers/USB/Class/CDC.h>
 
-/* Product-specific definitions: */
-#define ARDUINO_UNO_PID 0x0001
-#define ARDUINO_MEGA2560_PID 0x0010
-
-/* Macros: */
-/** Endpoint number of the CDC device-to-host notification IN endpoint. */
-#define CDC_NOTIFICATION_EPNUM 2
-
-/** Endpoint number of the CDC device-to-host data IN endpoint. */
-#define CDC_TX_EPNUM 3
-
-/** Endpoint number of the CDC host-to-device data OUT endpoint. */
-#define CDC_RX_EPNUM 4
-
-/** Size in bytes of the CDC device-to-host notification IN endpoint. */
-#define CDC_NOTIFICATION_EPSIZE 8
-
-/** Size in bytes of the CDC data IN and OUT endpoints. */
-#define CDC_TXRX_EPSIZE 64
+#include "hid/usb_descriptors.h"
 
 /* Type Defines: */
 /** Type define for the device configuration descriptor structure. This must be
@@ -69,16 +50,53 @@
  * device's usage to the host.
  */
 typedef struct {
-    USB_Descriptor_Configuration_Header_t Config;
-    USB_Descriptor_Interface_t CDC_CCI_Interface;
-    USB_CDC_Descriptor_FunctionalHeader_t CDC_Functional_IntHeader;
-    USB_CDC_Descriptor_FunctionalACM_t CDC_Functional_AbstractControlManagement;
-    USB_CDC_Descriptor_FunctionalUnion_t CDC_Functional_Union;
-    USB_Descriptor_Endpoint_t CDC_NotificationEndpoint;
-    USB_Descriptor_Interface_t CDC_DCI_Interface;
-    USB_Descriptor_Endpoint_t CDC_DataOutEndpoint;
-    USB_Descriptor_Endpoint_t CDC_DataInEndpoint;
+    ConfigurationDescriptor_t Config;
+
+    // Keyboard HID Interface
+    InterfaceDescriptor_t KeyboardInterface;
+    HIDDescriptor_t KeyboardHID;
+    EndpointDescriptor_t KeyboardReportEndpoint;
+
+    // Mouse HID Interface
+    InterfaceDescriptor_t MouseInterface;
+    HIDDescriptor_t MouseHID;
+    EndpointDescriptor_t MouseReportEndpoint;
 } USB_Descriptor_Configuration_t;
+
+typedef struct KeyboardReport_t {
+    bool left_control : 1;
+    bool left_shift : 1;
+    bool left_alt : 1;
+    bool left_gui : 1;
+    bool right_control : 1;
+    bool right_shift : 1;
+    bool right_alt : 1;
+    bool right_gui : 1;
+    uint8_t reserved;
+    uint8_t keys[6];
+} ATTR_PACKED KeyboardReport_t;
+
+typedef struct MouseReport_t {
+    uint8_t primary : 1;
+    uint8_t secondary : 1;
+    uint8_t tertary : 1;
+    uint8_t x;
+    uint8_t y;
+} ATTR_PACKED MouseReport_t;
+
+enum {
+    INTERFACE_ID_Keyboard = 0, /**< Keyboard interface descriptor ID */
+    INTERFACE_ID_Mouse = 1,    /**< Mouse interface descriptor ID */
+};
+
+/** Endpoint address of the Keyboard HID reporting IN endpoint. */
+#define KEYBOARD_IN_EPADDR (ENDPOINT_DIR_IN | 1)
+
+/** Endpoint address of the Mouse HID reporting IN endpoint. */
+#define MOUSE_IN_EPADDR (ENDPOINT_DIR_IN | 3)
+
+/** Size in bytes of each of the HID reporting IN endpoints. */
+#define HID_EPSIZE 8
 
 /* Function Prototypes: */
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,

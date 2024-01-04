@@ -17,16 +17,17 @@ project(
 
 # include(lib/arduinoCore.cmake)
 include(lib/lufa.cmake)
+include(lib/hid.cmake)
 # add_library(USB lib/usb/usb_descriptors.cpp lib/usb/usb_descriptors.h)
-# target_include_directories(USB PUBLIC lib)
+
 
 add_executable(${target} 
-    # src/main.cpp
-    src/Arduino-usbserial.c
-    src/Descriptors-copy.c
+    src/main.c
+    src/Descriptors.c
     )
 # target_link_libraries(${target} PRIVATE Arduino)
 target_link_libraries(${target} PRIVATE LUFA)
+target_link_libraries(${target} PRIVATE HID)
 target_include_directories(${target} PRIVATE inc)
 
 # generate .hex file

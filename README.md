@@ -16,6 +16,6 @@ usbipd detach --busid <busid>
 sudo apt-get update
 sudo apt-get install gcc-avr binutils-avr avr-libc gdb-avr avrdude
 
-cmake -D CMAKE_TOOLCHAIN_FILE=toolchain/arduino.cmake -S . -B build
+cmake -S . -B build
 cmake --build build
 ```
