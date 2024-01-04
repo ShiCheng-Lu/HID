@@ -25,7 +25,7 @@ typedef struct DescriptorHeader_t {
 #define DEVICE_DESCRIPTOR_HEADER               \
     {                                          \
         .bLength = sizeof(DeviceDescriptor_t), \
-        bDescriptorType = DEVICE_DESCRIPTOR    \
+        .bDescriptorType = DEVICE_DESCRIPTOR   \
     }
 typedef struct DeviceDescriptor_t {
     DescriptorHeader_t header;
@@ -61,7 +61,7 @@ typedef struct ConfigurationDescriptor_t {
 #define INTERFACE_DESCRIPTOR_HEADER                   \
     {                                                 \
         .bLength = sizeof(ConfigurationDescriptor_t), \
-        .bDescriptorType = CONFIGURATION_DESCRIPTOR   \
+        .bDescriptorType = INTERFACE_DESCRIPTOR       \
     }
 typedef struct InterfaceDescriptor_t {
     DescriptorHeader_t header;
@@ -80,8 +80,7 @@ typedef struct InterfaceDescriptor_t {
         .bDescriptorType = ENDPOINT_DESCRIPTOR   \
     }
 typedef struct EndpointDescriptor_t {
-    uint8_t bLength;
-    uint8_t bDescriptorType;
+    DescriptorHeader_t header;
     uint8_t bEndpointAddress;  // bit 7 descript flow direction, 1 = IN, 0 = OUT
     uint8_t bmAttributes;
     uint16_t wMaxPacketSize;
@@ -100,5 +99,7 @@ typedef struct HIDDescriptor_t {
 } __attribute__((packed)) HIDDescriptor_t;
 
 typedef uint8_t* StringDescriptor;
+
+#define ENDPOINT_IN(addr)
 
 #endif  // _USB_DESCRIPTOR_H_

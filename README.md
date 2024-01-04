@@ -14,8 +14,10 @@ usbipd detach --busid <busid>
 
 ```
 sudo apt-get update
-sudo apt-get install gcc-avr binutils-avr avr-libc gdb-avr avrdude
+sudo apt-get install gcc-avr binutils-avr avr-libc gdb-avr avrdude dfu-programmer
 
 cmake -S . -B build
 cmake --build build
+
+sudo dfu-programmer atmega16u2 flash Arduino-usbserial-atmega16u2-Uno-Rev3.hex
 ```

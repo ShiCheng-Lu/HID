@@ -1,8 +1,8 @@
-set(LUFAPath lib/lufa)
-set(LUFA_ROOT_PATH lib/lufa/LUFA)
+set(LUFA_REPO_PATH ${PROJECT_SOURCE_DIR}/lib/lufa)
+set(LUFA_ROOT_PATH ${LUFA_REPO_PATH}/LUFA)
 set(ARCH AVR8)
 
-add_library(LUFA
+add_library(LUFA_${MCU} STATIC
     # inc/LUFAConfig.h
     # LUFA_SRC_USB_COMMON
     ${LUFA_ROOT_PATH}/Drivers/USB/Core/${ARCH}/USBController_${ARCH}.c
@@ -47,14 +47,14 @@ add_library(LUFA
     # LUFA_SRC_TWI
     ${LUFA_ROOT_PATH}/Drivers/Peripheral/${ARCH}/TWI_${ARCH}.c)
 
-target_include_directories(LUFA PUBLIC
+target_include_directories(LUFA_${MCU} PUBLIC
     ${LUFA_ROOT_PATH}/Drivers/USB/Core
     ${LUFA_ROOT_PATH}/Drivers/USB/Core/${ARCH}
     ${LUFA_ROOT_PATH}/Drivers/USB
-    ${LUFAPath}
+    ${LUFA_REPO_PATH}
     )
 
-target_compile_options(LUFA PUBLIC
+target_compile_options(LUFA_${MCU} PUBLIC
     "-funsigned-char"
     "-funsigned-bitfields"
     "-ffunction-sections"
@@ -66,7 +66,7 @@ target_compile_options(LUFA PUBLIC
     "-Wstrict-prototypes"
     "-mmcu=${MCU}"
     )
-target_compile_definitions(LUFA PUBLIC
+target_compile_definitions(LUFA_${MCU} PUBLIC
     "F_CPU=16000000L"
     "F_USB=16000000L"
     "F_CLOCK=16000000L"
@@ -77,17 +77,17 @@ target_compile_definitions(LUFA PUBLIC
     "AVR_RESET_LINE_DDR=DDRD"
     "AVR_RESET_LINE_MASK=(1 << 7)"
     )
-target_compile_definitions(LUFA PUBLIC
+target_compile_definitions(LUFA_${MCU} PUBLIC
     "USB_DEVICE_ONLY"
     "USE_FLASH_DESCRIPTORS"
     "USE_STATIC_OPTIONS=(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
     "FIXED_CONTROL_ENDPOINT_SIZE=8"
     "FIXED_NUM_CONFIGURATIONS=1"
     )
-target_link_options(LUFA PUBLIC
+target_link_options(LUFA_${MCU} PUBLIC
     "-mmcu=${MCU}"
     "-fuse-linker-plugin"
     "LINKER:--gc-sections"
     )
-target_compile_features(LUFA PUBLIC 
+target_compile_features(LUFA_${MCU} PUBLIC 
     cxx_std_11 c_std_11)
