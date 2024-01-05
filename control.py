@@ -4,6 +4,7 @@ import struct
 
 
 class MatchHIDProtocol:
+    '''filter usb device based on the HID protocol'''
     KEYBOARD = 0x01
     MOUSE = 0x02
 

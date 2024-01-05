@@ -1,11 +1,15 @@
+# Echo-HID
 
 
-Atmega16u2 + Atmega328p Joystick to Keyboard HID device. Device can also be controlled by sending Keyboard/Mouse reports to the device.
+HID device that can be controlled by sending Keyboard/Mouse reports to the device.
+In addition, a button enables Joystick control via Atmega328p (Arduino UNO Rev3).
 
 Atmega16u2 as USB controller
 Atmega328p as peripheral controller
 
 HID library that Generates USD + HID descriptors from definition with some slightly cursed C macros.
+
+## Dev notes
 
 Attaching USB device to WSL
 ```

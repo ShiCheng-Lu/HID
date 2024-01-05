@@ -13,11 +13,12 @@ typedef struct MouseReport_t {
 } MouseReport_t;
 
 void setup() {
+    // init joystick
     pinMode(JOYSTICK_VRX, INPUT);
     pinMode(JOYSTICK_VRY, INPUT);
     pinMode(JOYSTICK_BTN, INPUT);
+    // button to enable/disable joystick reports
     pinMode(ENABLE_OUTPUT, INPUT);
-    // init joystick
     Serial.begin(9600);
 
     pinMode(LED_PIN, OUTPUT);
@@ -30,33 +31,25 @@ void updateJoystick() {
         .y = (int8_t)((511 - analogRead(JOYSTICK_VRY)) / 4),
     };
 
-    // aaa sssss
+    // send 0b100<size:5> to begin report transmission
+    // this is picked up by usb_interface to receive a mouse report
     Serial.write(0x80 + sizeof(report));
     Serial.write((uint8_t*)&report, sizeof(report));
 }
 
-enum SwitchState {
-    OFF,
-    ON,
-    GOTO_ON,
-    GOTO_OFF,
-}
-
-static enabled = OFF;
+static int enabled = false;
+static int prev_state = LOW;
+/**
+ * @brief enable/disable reporting joystick mouse based on button state
+ * Joystick will override echo behaviour of the HID device,
+ * when joystick is enabled, the device cannot be controlled from host, instead,
+ * its controlled by the joystick.
+ */
 void updateEnable(void) {
-    int data = digitalRead(ENABLE_OUTPUT);
-    if (data == HIGH) {
-        if (enabled == ON) {
-            enabled = GOTO_OFF;
-        } else if (enabled == OFF) {
-            enabled = GOTO_ON;
-        }
-    } else {  // DATA == LOW
-        if (enabled == GOTO_ON) {
-            enabled = ON;
-        } else if (enabled == GOTO_OFF) {
-            enabled = OFF;
-        }
+    int state = digitalRead(ENABLE_OUTPUT);
+    if (state != prev_state) {
+        prev_state = state;
+        enabled = !enabled;
     }
 }
 
@@ -71,7 +64,7 @@ void updateLED(void) {
     }
 
     digitalWrite(LED_PIN, state);
-    state ^= 1;
+    state = !state;
 }
 
 int main(void) {

@@ -39,7 +39,6 @@ void SetKeyboardReport(KeyboardReport_t* data) {
 
 void HandleMouseReport(MouseReport_t* data) {
     memcpy(&mouse, data, sizeof(MouseReport_t));
-    // mouse.x += 1;
 }
 
 void HandleKeyboardReport(KeyboardReport_t* data) {

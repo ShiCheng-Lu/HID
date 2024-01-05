@@ -38,6 +38,7 @@ void CALLBACK_HID_Device_ProcessHIDReport(
 void HID_USBTask(void);
 
 /* requires implementation */
+// set and process HID reports
 void SetKeyboardReport(KeyboardReport_t* keyboard);
 void SetMouseReport(MouseReport_t* mouse);
 void HandleKeyboardReport(KeyboardReport_t* keyboard);

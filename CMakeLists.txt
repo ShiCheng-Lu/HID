@@ -13,10 +13,14 @@ project(
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# arduinoCore can only be built for atmega328p
 set(MCU atmega328p)
 include(lib/arduinoCore.cmake)
+
+# LUFA can only be built for atmega16u2 (or other USB supported MCUs)
 set(MCU atmega16u2)
 include(lib/lufa.cmake)
+
 include(lib/hid.cmake)
 
 set(MCU)
