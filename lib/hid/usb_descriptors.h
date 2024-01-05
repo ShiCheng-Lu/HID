@@ -1,6 +1,5 @@
 // standard descriptors for the USB specification
 // assumes uint16_t are packed in little endian order
-// descriptor types and length are auto populated with send(descriptor);
 // function
 #ifndef _USB_DESCRIPTOR_H_
 #define _USB_DESCRIPTOR_H_

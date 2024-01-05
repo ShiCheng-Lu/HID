@@ -32,15 +32,6 @@
 #include "SerialInterface.h"
 #include "UsbEvents.h"
 
-void SetKeyboardReport(KeyboardReport_t* keyboard) {}
-
-void HandleLEDsReport(uint8_t* leds) {
-    uint8_t LEDMask = 0;
-    if (*leds & 1) {
-        Serial_SendByte(1);
-    }
-}
-
 /** Configures the board hardware and chip peripherals for the demo's
  * functionality. */
 void SetupHardware(void) {

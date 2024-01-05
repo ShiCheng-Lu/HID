@@ -1,30 +1,38 @@
-
 import usb.core
 import usb.util
+import struct
 
-# Find our device
-# dev = usb.core.find(idVendor=0xfffe, idProduct=0x0001)
-dev = usb.core.find(idVendor=0x16c0, idProduct=0x27da)
 
-# Was it found?
-if dev is None:
-    raise ValueError('Device not found')
+class MatchHIDProtocol:
+    KEYBOARD = 0x01
+    MOUSE = 0x02
 
-dev.set_configuration()
+    def __init__(self, protocol):
+        self.protocol = protocol
 
-cfg = dev[0]
-intf = cfg[(0,0)]
-ep = intf[0]
+    def __call__(self, device) -> bool:
+        interface = device[0][(0, 0)]
+        return (interface.bInterfaceProtocol == self.protocol)
 
-# dev.write(ep.bEndpointAddress, [0x00, 0x00,0x04,0x04,0xFF,0xFF,0xFF,0x00, 0x00], 1000)
-# dev.ctrl_transfer(bmRequestType, bRequest, wValue=0, wIndex=0, data_or_wLength=None, timeout=None)
 
-print("print ep")
-print(ep)
-print("print cfg")
-print(cfg)
-print("print intf")
-print(intf)
+class KeyboardControl:
+    def __init__(self):
+        self.device = usb.core.find(idVendor=0x16c0, idProduct=0x27da,
+                                    custom_match=MatchHIDProtocol(MatchHIDProtocol.KEYBOARD))
 
-while True:
-    pass
+
+class MouseControl:
+    def __init__(self):
+        self.device = usb.core.find(idVendor=0x16c0, idProduct=0x27da,
+                                    custom_match=MatchHIDProtocol(MatchHIDProtocol.MOUSE))
+
+    def move(self, button, x, y):
+        self.device.ctrl_transfer(
+            0x21,  # REQUEST_TYPE_CLASS | RECIPIENT_INTERFACE | ENDPOINT_OUT
+            9,     # SET_REPORT
+            0x200,  # "Vendor" Descriptor Type + 0 Descriptor Index
+            1,     # USB interface # 0
+            # the HID payload as a byte array -- e.g. from struct.pack()
+            struct.pack("<Bbb", button, x, y),
+        )
+

@@ -55,12 +55,14 @@ typedef struct {
     // Keyboard HID Interface
     InterfaceDescriptor_t KeyboardInterface;
     HIDDescriptor_t KeyboardHID;
-    EndpointDescriptor_t KeyboardReportEndpoint;
+    EndpointDescriptor_t KeyboardReportInEndpoint;
+    EndpointDescriptor_t KeyboardReportOutEndpoint;
 
     // Mouse HID Interface
     InterfaceDescriptor_t MouseInterface;
     HIDDescriptor_t MouseHID;
-    EndpointDescriptor_t MouseReportEndpoint;
+    EndpointDescriptor_t MouseReportInEndpoint;
+    EndpointDescriptor_t MouseReportOutEndpoint;
 } USB_Descriptor_Configuration_t;
 
 typedef struct KeyboardReport_t {
@@ -89,9 +91,11 @@ enum {
 
 /** Endpoint address of the Keyboard HID reporting IN endpoint. */
 #define KEYBOARD_IN_EPADDR (ENDPOINT_DIR_IN | 1)
+#define KEYBOARD_OUT_EPADDR (ENDPOINT_DIR_OUT | 2)
 
 /** Endpoint address of the Mouse HID reporting IN endpoint. */
 #define MOUSE_IN_EPADDR (ENDPOINT_DIR_IN | 3)
+#define MOUSE_OUT_EPADDR (ENDPOINT_DIR_OUT | 4)
 
 /** Size in bytes of each of the HID reporting IN endpoints. */
 #define HID_EPSIZE 8

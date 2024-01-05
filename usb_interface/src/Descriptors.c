@@ -8,38 +8,46 @@ const uint8_t PROGMEM keyboard_report_descriptor[] = {
 USAGE_PAGE (Generic_Desktop)
 USAGE (Keyboard)
 COLLECTION (Application)
-  USAGE_PAGE (Keyboard)
-  USAGE_MINIMUM (Keyboard_LeftControl)
-  USAGE_MAXIMUM (Keyboard_Right_GUI)
-  LOGICAL_MINIMUM (0)
-  LOGICAL_MAXIMUM (1)
-  REPORT_SIZE (1)
-  REPORT_COUNT (8)
-  INPUT (Data,Var,Abs)
+    USAGE_PAGE (Keyboard)
+    USAGE_MINIMUM (Keyboard_LeftControl)
+    USAGE_MAXIMUM (Keyboard_Right_GUI)
+    LOGICAL_MINIMUM (0)
+    LOGICAL_MAXIMUM (1)
+    REPORT_SIZE (1)
+    REPORT_COUNT (8)
+    INPUT (Data,Var,Abs)
+
+    REPORT_COUNT (1)
+    REPORT_SIZE (8)
+    INPUT (Cnst)
   
-  REPORT_COUNT (1)
-  REPORT_SIZE (8)
-  INPUT (Cnst)
+    // REPORT_COUNT (5)
+    // REPORT_SIZE (1)
+    // USAGE_PAGE (LEDs)
+    // USAGE_MINIMUM (0x01) // Num_Lock
+    // USAGE_MAXIMUM (0x05) // Kana
+    // OUTPUT (Data,Var,Abs)
+    
+    // REPORT_COUNT (1)
+    // REPORT_SIZE (3)
+    // OUTPUT (Cnst)
   
-  REPORT_COUNT (5)
-  REPORT_SIZE (1)
-  USAGE_PAGE (LEDs)
-  USAGE_MINIMUM (0x01) // Num_Lock
-  USAGE_MAXIMUM (0x05) // Kana
-  OUTPUT (Data,Var,Abs)
-  
-  REPORT_COUNT (1)
-  REPORT_SIZE (3)
-  OUTPUT (Cnst)
-  
-  REPORT_COUNT (6)
-  REPORT_SIZE (8)
-  LOGICAL_MAXIMUM (0)
-  LOGICAL_MAXIMUM (101)
-  USAGE_PAGE (Keyboard)
-  USAGE_MINIMUM (0)
-  USAGE_MAXIMUM (Keyboard_Application)
-  INPUT (Data,Ary,Abs)
+    REPORT_COUNT (6)
+    REPORT_SIZE (8)
+    LOGICAL_MAXIMUM (0)
+    LOGICAL_MAXIMUM (101)
+    USAGE_PAGE (Keyboard)
+    USAGE_MINIMUM (0)
+    USAGE_MAXIMUM (Keyboard_Application)
+    INPUT (Data,Ary,Abs)
+
+    USAGE_PAGE (Generic_Desktop)
+    USAGE (0x01)
+    LOGICAL_MINIMUM (0x00)
+    LOGICAL_MAXIMUM (0xFF)
+    REPORT_SIZE (8)
+    REPORT_COUNT (sizeof(KeyboardReport_t))
+    OUTPUT (Data,Var,Abs)
 END_COLLECTION
 };
 
@@ -47,43 +55,40 @@ const uint8_t PROGMEM mouse_report_descriptor[] = {
 USAGE_PAGE (Generic_Desktop) 
 USAGE (Mouse)
 COLLECTION (Application)
-  USAGE (Pointer)
-  COLLECTION (Physical)
-    USAGE_PAGE (Button)
-    USAGE_MINIMUM (Button_1)
-    USAGE_MAXIMUM (Button_3)
-    LOGICAL_MINIMUM (0)
-    LOGICAL_MAXIMUM (1)
-    REPORT_COUNT (3)
-    REPORT_SIZE (1)
-    INPUT (Data,Var,Abs)
-    REPORT_COUNT (1)
-    REPORT_SIZE (5)
-    INPUT (Cnst,Var,Abs)
+    USAGE (Pointer)
+    COLLECTION (Physical)
+        USAGE_PAGE (Button)
+        USAGE_MINIMUM (Button_1)
+        USAGE_MAXIMUM (Button_3)
+        LOGICAL_MINIMUM (0)
+        LOGICAL_MAXIMUM (1)
+        REPORT_COUNT (3)
+        REPORT_SIZE (1)
+        INPUT (Data,Var,Abs)
+        REPORT_COUNT (1)
+        REPORT_SIZE (5)
+        INPUT (Cnst,Var,Abs)
+        USAGE_PAGE (Generic_Desktop)
+        USAGE (X)
+        USAGE (Y)
+        LOGICAL_MINIMUM (-128)
+        LOGICAL_MAXIMUM (127)
+        PHYSICAL_MINIMUM (-5)
+        PHYSICAL_MAXIMUM (5)
+        REPORT_SIZE (8)
+        REPORT_COUNT (2)
+        INPUT (Data,Var,Rel)
+    END_COLLECTION
+  
     USAGE_PAGE (Generic_Desktop)
-    USAGE (X)
-    USAGE (Y)
-    LOGICAL_MINIMUM (-128)
-    LOGICAL_MAXIMUM (127)
-    PHYSICAL_MINIMUM (-5)
-    PHYSICAL_MAXIMUM (5)
+    USAGE (0x01)
+    LOGICAL_MINIMUM (0x00)
+    LOGICAL_MAXIMUM (0xFF)
     REPORT_SIZE (8)
-    REPORT_COUNT (2)
-    INPUT (Data,Var,Rel)
-  END_COLLECTION
+    REPORT_COUNT (sizeof(MouseReport_t))
+    OUTPUT (Data,Var,Abs)
 END_COLLECTION
 };
-
-// uint8_t input_command_descriptor[] = {
-// USAGE_PAGE (Generic_Desktop)
-// USAGE ()
-// COLLECTION (Application)
-//   USAGE ()
-//   COLLECTION ()
-  
-//   END_COLLECTION
-// END_COLLECTION
-// };
 
 // clang-format on
 
@@ -108,16 +113,16 @@ const USB_Descriptor_Configuration_t PROGMEM config_descriptor = {
             .bmAttributes = 0x80,
             .bMaxPower = USB_CONFIG_POWER_MA(100),
         },
+
     .KeyboardInterface =
         {
             .header = INTERFACE_DESCRIPTOR_HEADER,
             .bInterfaceNumber = INTERFACE_ID_Keyboard,
-            .bNumEndpoints = 1,
+            .bNumEndpoints = 2,
             .bInterfaceClass = 0x03,     // HID
             .bInterfaceSubClass = 0x01,  // suport Boot
             .bInterfaceProtocol = 0x01,  // keyboard
         },
-
     .KeyboardHID =
         {
             .header = HID_DESCRIPTOR_HEADER,
@@ -126,7 +131,7 @@ const USB_Descriptor_Configuration_t PROGMEM config_descriptor = {
             .bDescriptorType = REPORT_DESCRIPTOR,
             .wDescriptorLength = sizeof(keyboard_report_descriptor),
         },
-    .KeyboardReportEndpoint =
+    .KeyboardReportInEndpoint =
         {
             .header = ENDPOINT_DESCRIPTOR_HEADER,
             // bit 7 = 1: IN, 0: OUT, bits 0-3 endpoint num
@@ -136,11 +141,20 @@ const USB_Descriptor_Configuration_t PROGMEM config_descriptor = {
             .wMaxPacketSize = 0x08,
             .bInterval = 5,
         },
+    .KeyboardReportOutEndpoint =
+        {
+            .header = ENDPOINT_DESCRIPTOR_HEADER,
+            .bEndpointAddress = KEYBOARD_OUT_EPADDR,
+            .bmAttributes = 0x03,
+            .wMaxPacketSize = 0x08,
+            .bInterval = 5,
+        },
+
     .MouseInterface =
         {
             .header = INTERFACE_DESCRIPTOR_HEADER,
             .bInterfaceNumber = INTERFACE_ID_Mouse,
-            .bNumEndpoints = 1,
+            .bNumEndpoints = 2,
             .bInterfaceClass = 0x03,
             .bInterfaceSubClass = 0x01,
             .bInterfaceProtocol = 0x02,  // Mouse
@@ -153,11 +167,18 @@ const USB_Descriptor_Configuration_t PROGMEM config_descriptor = {
             .bDescriptorType = REPORT_DESCRIPTOR,
             .wDescriptorLength = sizeof(mouse_report_descriptor),
         },
-
-    .MouseReportEndpoint =
+    .MouseReportInEndpoint =
         {
             .header = ENDPOINT_DESCRIPTOR_HEADER,
             .bEndpointAddress = MOUSE_IN_EPADDR,
+            .bmAttributes = 0x03,
+            .wMaxPacketSize = 0x08,
+            .bInterval = 5,
+        },
+    .MouseReportOutEndpoint =
+        {
+            .header = ENDPOINT_DESCRIPTOR_HEADER,
+            .bEndpointAddress = MOUSE_OUT_EPADDR,
             .bmAttributes = 0x03,
             .wMaxPacketSize = 0x08,
             .bInterval = 5,

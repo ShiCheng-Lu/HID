@@ -6,7 +6,10 @@
 
 static uint8_t counter = 1;
 static uint8_t data_size = 0;
+static uint8_t type = 0;
+
 static MouseReport_t mouse;
+static KeyboardReport_t keyboard;
 
 void Read_UART_Task(void) {
     int16_t received = Serial_ReceiveByte();
@@ -14,7 +17,8 @@ void Read_UART_Task(void) {
         return;
     }
     uint8_t byte = received;
-    if ((counter >= data_size) && ((byte & 0xA0) == 0x80)) {  // start of message
+    if ((counter >= data_size) &&
+        ((byte & 0xA0) == 0x80)) {  // start of message
         data_size = byte & 0x1F;
         counter = 0;
         return;
@@ -25,8 +29,19 @@ void Read_UART_Task(void) {
     }
 }
 
-void SetMouseReport(MouseReport_t* dest) {
-    dest->buttons = mouse.buttons;
-    dest->x = mouse.x;
-    dest->y = mouse.y;
+void SetMouseReport(MouseReport_t* data) {
+    memcpy(data, &mouse, sizeof(MouseReport_t));
+}
+
+void SetKeyboardReport(KeyboardReport_t* data) {
+    memcpy(data, &keyboard, sizeof(KeyboardReport_t));
+}
+
+void HandleMouseReport(MouseReport_t* data) {
+    memcpy(&mouse, data, sizeof(MouseReport_t));
+    // mouse.x += 1;
+}
+
+void HandleKeyboardReport(KeyboardReport_t* data) {
+    memcpy(&keyboard, data, sizeof(KeyboardReport_t));
 }

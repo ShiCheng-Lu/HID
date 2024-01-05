@@ -83,8 +83,6 @@ void EVENT_USB_Device_ConfigurationChanged(void) {
     ConfigSuccess &= HID_Device_ConfigureEndpoints(&Mouse_HID_Interface);
 
     USB_Device_EnableSOFEvents();
-
-    LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
 }
 
 /** Event handler for the library USB Control Request reception event. */
@@ -122,17 +120,11 @@ bool CALLBACK_HID_Device_CreateHIDReport(
     uint16_t* const ReportSize) {
     /* Determine which interface must have its report generated */
     if (HIDInterfaceInfo == &Keyboard_HID_Interface) {
-        KeyboardReport_t* keyboard = (KeyboardReport_t*)ReportData;
-
-        SetKeyboardReport(keyboard);
-
+        SetKeyboardReport((KeyboardReport_t*)ReportData);
         *ReportSize = sizeof(KeyboardReport_t);
         return false;
-    } else {
-        MouseReport_t* mouse = (MouseReport_t*)ReportData;
-
-        SetMouseReport(mouse);
-
+    } else if (HIDInterfaceInfo == &Mouse_HID_Interface) {
+        SetMouseReport((MouseReport_t*)ReportData);
         *ReportSize = sizeof(MouseReport_t);
         return true;
     }
@@ -155,14 +147,14 @@ void CALLBACK_HID_Device_ProcessHIDReport(
     const void* ReportData,
     const uint16_t ReportSize) {
     if (HIDInterfaceInfo == &Keyboard_HID_Interface) {
-        uint8_t* LEDReport = (uint8_t*)ReportData;
-
-        HandleLEDsReport(LEDReport);
+        HandleKeyboardReport((KeyboardReport_t*)ReportData);
+    } else if (HIDInterfaceInfo == &Mouse_HID_Interface) {
+        HandleMouseReport((MouseReport_t*)ReportData);
     }
 }
 
 /**
- * 
+ *
  */
 void HID_USBTask(void) {
     HID_Device_USBTask(&Keyboard_HID_Interface);

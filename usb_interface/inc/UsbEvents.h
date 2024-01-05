@@ -40,6 +40,7 @@ void HID_USBTask(void);
 /* requires implementation */
 void SetKeyboardReport(KeyboardReport_t* keyboard);
 void SetMouseReport(MouseReport_t* mouse);
-void HandleLEDsReport(uint8_t* leds);
+void HandleKeyboardReport(KeyboardReport_t* keyboard);
+void HandleMouseReport(MouseReport_t* mouse);
 
 #endif
