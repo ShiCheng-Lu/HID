@@ -4,73 +4,30 @@
 #define JOYSTICK_VRY A1
 #define JOYSTICK_BTN 2
 
-enum {
-    ZERO,
-    POS_SLOW,
-    POS_MEDIUM,
-    POS_FAST,
-    NEG_SLOW,
-    NEG_MEDIUM,
-    NEG_FAST,
-};
+typedef struct MouseReport_t {
+    uint8_t buttons;
+    int8_t x;
+    int8_t y;
+} MouseReport_t;
 
 void setup() {
     pinMode(JOYSTICK_VRX, INPUT);
     pinMode(JOYSTICK_VRY, INPUT);
-    pinMode(JOYSTICK_BTN, INPUT_PULLUP);
+    pinMode(JOYSTICK_BTN, INPUT);
     // init joystick
     Serial.begin(9600);
 }
 
-uint8_t speed(int x) {
-    uint8_t neg_offset = 0;
-    if (x >= 512) {
-        x = x - 512;
-    } else {
-        x = 511 - x;
-        neg_offset = POS_FAST;
-    }
-    if (x < 10) {
-        return ZERO;
-    }
-    if (x < 256) {
-        return POS_SLOW + neg_offset;
-    }
-    if (x < 500) {
-        return POS_MEDIUM + neg_offset;
-    }
-    return POS_FAST + neg_offset;
-}
-
 void updateJoystick() {
-    int x = analogRead(JOYSTICK_VRX);
-    int y = analogRead(JOYSTICK_VRY);
-    int8_t button = digitalRead(JOYSTICK_BTN);
+    MouseReport_t report = {
+        .buttons = digitalRead(JOYSTICK_BTN),
+        .x = (int8_t)((511 - analogRead(JOYSTICK_VRX)) / 4),
+        .y = (int8_t)((511 - analogRead(JOYSTICK_VRY)) / 4),
+    };
 
-    // noise deadzone
-
-    uint8_t output[] = {0xff, !button, speed(x), speed(y)};
-
-    Serial.write((uint8_t*)output, sizeof(output));
-}
-
-static int state = HIGH;
-void updateLED(void) {
-    int data = Serial.read();
-    if (data < 0) {
-        return;
-    }
-    // clear buffer
-    while (Serial.read() >= 0) {
-    }
-
-    digitalWrite(3, state);
-    state ^= 1;
-}
-
-// Declared weak in Arduino.h to allow user redefinitions.
-int atexit(void (* /*func*/)()) {
-    return 0;
+    // aaa sssss
+    Serial.write(0x80 + sizeof(report));
+    Serial.write((uint8_t*)&report, sizeof(report));
 }
 
 int main(void) {
@@ -78,7 +35,7 @@ int main(void) {
     setup();
 
     while (true) {
-        updateLED();
+        // updateLED();
         updateJoystick();
         serialEventRun();
     }

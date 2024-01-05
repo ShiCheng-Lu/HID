@@ -36,16 +36,9 @@ void SetKeyboardReport(KeyboardReport_t* keyboard) {}
 
 void HandleLEDsReport(uint8_t* leds) {
     uint8_t LEDMask = 0;
-    if (*leds & HID_KEYBOARD_LED_NUMLOCK)
-        LEDMask |= LEDS_LED1;
-
-    if (*leds & HID_KEYBOARD_LED_CAPSLOCK)
-        LEDMask |= LEDS_LED3;
-
-    if (*leds & HID_KEYBOARD_LED_SCROLLLOCK)
-        LEDMask |= LEDS_LED4;
-
-    LEDs_SetAllLEDs(LEDMask);
+    if (*leds & 1) {
+        Serial_SendByte(1);
+    }
 }
 
 /** Configures the board hardware and chip peripherals for the demo's
@@ -77,14 +70,9 @@ int main(void) {
 
     GlobalInterruptEnable();
 
-    int counter = 0;
     for (;;) {
         Read_UART_Task();
         HID_USBTask();
         USB_USBTask();
-        if (counter++ > 1000) {
-            Serial_SendByte(1);
-            counter = 0;
-        }
     }
 }
